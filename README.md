@@ -3,21 +3,27 @@ milter-x-delay
 
 ## What is it?
 
-This project will process outgoing messages from a compatible MTA,
-such as Postfix.
+This milter will process outgoing emails from a compatible MTA,
+such as Postfix, or Exim. This would process emails sent from
+SMTP/Submission/SMTPS **and** Sendmail.
 
-If the headers _do_ include this header: `X-Delay-Timestamp`, then it
-will read the aforementioned header, which should have a ISO 8601
+If the headers of an email include this header: `X-Delay`, then it
+will read the aforementioned header, which should have a ISO-8601
 compliant timestamp.
 
-Once the milter reaches the timestamp specified, it will send the
-message to the MTA to be send ASAP.
+The milter will store the email in an internal queue, and wait for the
+system time (with accordance to timezones) to reach the `X-Delay`
+timestamp specified in the message.
 
-## Status
+Once this condition is met, the milter will allow the email to be sent.
 
-Currently working locally on the milter. Will be out when its out.
+Once the milter reaches the timestamp specified, it will release the
+message to the MTA.
 
-## Copyright
+## Development status
 
-This program is licensed under the Apache 2.0 license, copyright Dom
-Rodriguez (2019)
+Working locally on the milter, expect commits soon!
+
+## License
+
+This project is licensed under the Apache 2.0 license.
