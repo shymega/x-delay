@@ -6,7 +6,7 @@ x-delay
 This SMTP server accepts outgoing emails from a (compatible) MTA, and when a
 condition is met, releases them back to the MTA to be processed.
 
-If the headers of an email include this header: `X-Delay`, then it
+If the headers of an email include this header: `X-Delay-TS`, then it
 will read the aforementioned header, which should have a ISO-8601
 compliant timestamp.
 
