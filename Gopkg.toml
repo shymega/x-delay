@@ -24,15 +24,18 @@
 #   go-tests = true
 #   unused-packages = true
 
-
 [prune]
   go-tests = true
   unused-packages = true
 
-[[override]]
+[[constraint]]
   name = "github.com/emersion/go-smtp"
   version = "0.10.0"
 
 [[override]]
   name = "github.com/inconshreveable/log15"
   version = "2.14.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/DusanKasan/parsemail"

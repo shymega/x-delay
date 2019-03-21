@@ -2,48 +2,35 @@
 
 
 [[projects]]
-  digest = "1:586ea76dbd0374d6fb649a91d70d652b7fe0ccffb8910a77468e7702e7901f3d"
-  name = "github.com/go-stack/stack"
+  branch = "master"
+  digest = "1:cc53b1c716127359228f7875cab77c86057686028b237f3943824395a0fca736"
+  name = "github.com/DusanKasan/parsemail"
   packages = ["."]
   pruneopts = "UT"
-  revision = "2fee6af1a9795aafbe0253a0cfbdf668e1fb8a9a"
-  version = "v1.8.0"
-
-[[projects]]
-  digest = "1:e96640e5b9ce93e2d7ee18f48048483080fd23e72e3c38bc17e9c8b77062031a"
-  name = "github.com/inconshreveable/log15"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "67afb5ed74ec82fd7ac8f49d27c509ac6f991970"
-  version = "v2.14"
-
-[[projects]]
-  digest = "1:2fa7b0155cd54479a755c629de26f888a918e13f8857a2c442205d825368e084"
-  name = "github.com/mattn/go-colorable"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "3a70a971f94a22f2fa562ffcc7a0eb45f5daf045"
-  version = "v0.1.1"
-
-[[projects]]
-  digest = "1:e150b5fafbd7607e2d638e4e5cf43aa4100124e5593385147b0a74e2733d8b0d"
-  name = "github.com/mattn/go-isatty"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "c2a7a6ca930a4cd0bc33a3f298eb71960732a3a7"
-  version = "v0.0.7"
+  revision = "abc648830b9a1e9440c2c817a42a73a17c0d0c64"
 
 [[projects]]
   branch = "master"
-  digest = "1:5637b3b43405643229e55140bb3049dfa7d73957ba9ecfccc31cdadbfbe0b1f9"
-  name = "golang.org/x/sys"
-  packages = ["unix"]
+  digest = "1:7cc7f47cf4e6f9be30f0e38934f6470cf4c35c9479350bc5e764d3e428018e2e"
+  name = "github.com/emersion/go-sasl"
+  packages = ["."]
   pruneopts = "UT"
-  revision = "6c81ef8f67ca3f42fc9cd71dfbd5f35b0c4b5771"
+  revision = "7e096a0a6197b89989e8cc31016daa67c8c62051"
+
+[[projects]]
+  digest = "1:4782f0fedd365fdc1efc6a1b0af56578e24bf3263460632045193e20a1b9fe28"
+  name = "github.com/emersion/go-smtp"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ffb207c58591a6453fc1bada5c97844ee6500f49"
+  version = "v0.10.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["github.com/inconshreveable/log15"]
+  input-imports = [
+    "github.com/DusanKasan/parsemail",
+    "github.com/emersion/go-smtp",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
