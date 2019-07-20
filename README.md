@@ -24,3 +24,10 @@ Working locally on the SMTP server, expect commits soon!
 ## License
 
 This project is licensed under the Apache 2.0 license.
+
+## TODO
+
+- InfluxDB metrics.
+- STDIN/server differentation.
+- STDIN support.
+- Milter?
