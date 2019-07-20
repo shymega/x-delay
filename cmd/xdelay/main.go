@@ -3,11 +3,14 @@ package main
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"net/mail"
+	"time"
 
 	"github.com/DusanKasan/parsemail"
-	"github.com/emersion/go-smtp"
+	smtp "github.com/emersion/go-smtp"
 	log "github.com/inconshreveable/log15"
 )
 
@@ -19,58 +22,125 @@ var (
 )
 
 type Backend struct{}
-type User struct{}
+type Session struct{}
 
-func (bkd *Backend) Login(state *smtp.ConnectionState, username, password string) (smtp.User, error) {
-	return &User{}, nil
+// Login callback function for go-smtp.
+// We use this to accept any SMTP connection. Authentication should be
+// handled by the MTA, not us.
+func (bkd *Backend) Login(state *smtp.ConnectionState, username, password string) (smtp.Session, error) {
+	log.Debug("Connection accepted as authenticated login.")
+	return &Session{}, nil
 }
 
-func (bkd *Backend) AnonymousLogin(state *smtp.ConnectionState) (smtp.User, error) {
-	return &User{}, nil
+// AnonymousLogin callback function for go-smtp.
+// We use this to accept any SMTP connection. Authentication should be
+// handled by the MTA, not us.
+func (bkd *Backend) AnonymousLogin(state *smtp.ConnectionState) (smtp.Session, error) {
+	log.Debug("Connection accepted as anonymous login.")
+	return &Session{}, nil
 }
 
-func (u *User) Send(from string, to []string, r io.Reader) error {
-	log.Info("Received message from MTA, now processing.")
+// Mail (MAIL FROM) callback function for go-smtp.
+// We use this to handle MAIL FROM commands from SMTP client(s).
+func (s *Session) Mail(from string) error {
+	log.Debug("MAIL FROM command accepted.")
+	return nil
+}
+
+// Rcpt (RCPT TO) callback function for go-smtp.
+// We use this to handle RCPT TO commands from SMTP client(s).
+func (s *Session) Rcpt(to string) error {
+	log.Debug("RCPT TO command accepted.")
+	return nil
+}
+
+// checkError is a quick 'n dirty function to handle errors.
+func checkError(e error) {
+	if e != nil {
+		log.Crit(e.Error())
+	}
+}
+
+func (s *Session) Data(r io.Reader) error {
+	log.Info("Email received from MTA; now processing.")
 
 	var b []byte
 	var err error
 
+	log.Debug("Reading email into byte array.")
 	if b, err = ioutil.ReadAll(r); err != nil {
-		return err
-	} else {
-		byteIO := bytes.NewReader(b)
+		log.Crit(err.Error()) /* we should handle this gracefully */
+	}
 
-		email, err := parsemail.Parse(byteIO)
-		if err != nil {
-			log.Error(err.Error())
-		}
+	log.Debug("Parsing email into struct.")
+	email, err := parsemail.Parse(bytes.NewReader(b))
+	if err != nil {
+		log.Crit(err.Error()) /* we should handle this gracefully */
+	}
 
-		if len(email.Header.Get("X-Delay-TS")) > 0 {
-			log.Info("X-Delay-TS header detected.")
-			log.Info("Queuing for further processing.")
+	log.Debug("Searching for X-Delay-TS header.")
+	if email.Header.Get("X-Delay-TS") != "" {
+		log.Info("Found X-Delay-TS header.")
+		log.Info("Sending for further processing!")
 
-			err = ioutil.WriteFile("/home/dzr/message.dat", b, 0644)
+		err = ioutil.WriteFile("/home/dzr/message.dat", b, 0644)
 
-			return nil
-		}
+		return nil
+	}
 
-		err = smtp.SendMail("localhost:10026", nil, from, to, byteIO)
-		if err != nil {
-			log.Error("Failed to send email back to MTA.",
-				log.Ctx{"error": err.Error()})
-		}
+	log.Debug("Injecting email back to MTA.")
+	err = smtp.SendMail(
+		fmt.Sprintf("%s:%s",
+			mtaAddr, mtaPort),
+		nil,
+		fmt.Sprintf("<%s>",
+			email.From[0].Address),
+		concatToCcBccHeader(email.To, email.Cc, email.Bcc),
+		bytes.NewReader(b))
+
+	if err != nil {
+		log.Crit(err.Error()) /* we should handle this gracefully */
 	}
 
 	return nil
 }
 
-func (u *User) Logout() error {
+func concatToCcBccHeader(to []*mail.Address, cc []*mail.Address, bcc []*mail.Address) []string {
+	var final []string
+
+	log.Debug("Begin processing of To, Cc, and Bcc headers.")
+
+	for _, e := range to {
+		final = append(final, e.Address)
+	}
+
+	for _, e := range cc {
+		final = append(final, e.Address)
+	}
+
+	for _, e := range bcc {
+		final = append(final, e.Address)
+	}
+
+	log.Debug("Processing finalised.")
+
+	return final
+}
+
+func (s *Session) Reset() {
+	log.Debug("RSET commad accepted.")
+}
+
+func (s *Session) Logout() error {
+	log.Debug("LOGOUT command accepted.")
 	return nil
 }
 
 func init() {
+	log.Info("X-Delay initialising.")
+
 	flag.StringVar(&bindAddr, "bindAddr",
-		"127.0.0.1:10025",
+		"localhost:10025",
 		"Address to listen on for SMTP requests.")
 
 	flag.StringVar(&domain, "domain",
@@ -89,20 +159,26 @@ func init() {
 }
 
 func main() {
+	log.Debug("Creating new SMTP server.")
 	bkd := &Backend{}
 	s := smtp.NewServer(bkd)
 
+	log.Debug("Configuring SMTP server parameters..")
+
 	s.Addr = bindAddr
-	s.Domain = domain
-	s.MaxIdleSeconds = 150
-	s.MaxMessageBytes = 1024 * 1024
-	s.MaxRecipients = 20
-	s.Strict = true
 	s.AuthDisabled = true
+	s.Domain = domain
+	s.MaxMessageBytes = 1024 * 1024
+	s.MaxRecipients = 50
+	s.ReadTimeout = 20 * time.Second
+	s.Strict = true
+	s.WriteTimeout = 20 * time.Second
+
+	log.Info("Initialisation complete!")
 
 	log.Info("Starting server now.",
 		log.Ctx{"bindAddress": s.Addr})
 	if err := s.ListenAndServe(); err != nil {
-		log.Error(err.Error())
+		log.Crit(err.Error()) /* we should handle this gracefully */
 	}
 }
