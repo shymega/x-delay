@@ -69,12 +69,11 @@ func (s *Session) Data(r io.Reader) error {
 	var b []byte
 	var err error
 
-	log.Debug("Reading email into byte array.")
+	log.Debug("Reading email and parsing..")
 	if b, err = ioutil.ReadAll(r); err != nil {
 		log.Crit(err.Error()) /* we should handle this gracefully */
 	}
 
-	log.Debug("Parsing email into struct.")
 	email, err := parsemail.Parse(bytes.NewReader(b))
 	if err != nil {
 		log.Crit(err.Error()) /* we should handle this gracefully */
@@ -110,8 +109,6 @@ func (s *Session) Data(r io.Reader) error {
 func concatToCcBccHeader(to []*mail.Address, cc []*mail.Address, bcc []*mail.Address) []string {
 	var final []string
 
-	log.Debug("Begin processing of To, Cc, and Bcc headers.")
-
 	for _, e := range to {
 		final = append(final, e.Address)
 	}
@@ -123,8 +120,6 @@ func concatToCcBccHeader(to []*mail.Address, cc []*mail.Address, bcc []*mail.Add
 	for _, e := range bcc {
 		final = append(final, e.Address)
 	}
-
-	log.Debug("Processing finalised.")
 
 	return final
 }
