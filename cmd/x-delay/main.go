@@ -42,7 +42,7 @@ func (bkd *Backend) AnonymousLogin(state *smtp.ConnectionState) (smtp.Session, e
 
 // Mail (MAIL FROM) callback function for go-smtp.
 // We use this to handle MAIL FROM commands from SMTP client(s).
-func (s *Session) Mail(from string) error {
+func (s *Session) Mail(from string, opts smtp.MailOptions) error {
 	log.Debug("MAIL FROM command accepted.")
 	return nil
 }
