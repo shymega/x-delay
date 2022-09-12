@@ -55,6 +55,8 @@ func (s *Session) Rcpt(to string) error {
 }
 
 // checkError is a quick 'n dirty function to handle errors.
+// I want to make this a bit more robust, rather than just dying with an error.
+// On the other hand, should I take the Erlang approach?
 func checkError(e error) {
 	if e != nil {
 		log.Crit(e.Error())
