@@ -1,0 +1,44 @@
+name: Container image builder for x-delay
+
+on:
+  workflow_run:
+    workflows: ["CI workflow"]
+    types: [completed]
+    branches: [main]
+  
+jobs:
+  build-and-push-container-image:
+    name: Build and push container image to Docker Hub and GHCR.io
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Build container image
+        id: build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: shymega/x-delay
+          tags: latest
+          containerfiles: Dockerfile
+
+      - name: Push container image to Docker Hub
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
+          registry: docker.io
+          username: shymega
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+      - name: Push container image to GHCR.io
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
+          registry: ghcr.io
+          username: shymega
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+          
