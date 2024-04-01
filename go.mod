@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/DusanKasan/parsemail v1.2.0
-	github.com/emersion/go-smtp v0.20.2
+	github.com/emersion/go-smtp v0.21.0
 	github.com/inconshreveable/log15 v3.0.0-testing.5+incompatible
 )
 
