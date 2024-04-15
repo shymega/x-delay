@@ -2,8 +2,8 @@ github.com/DusanKasan/parsemail v1.2.0 h1:CrzTL1nuPLxB41aO4zE/Tzc9GVD8jjifUftlbT
 github.com/DusanKasan/parsemail v1.2.0/go.mod h1:B9lfMbpVe4DMqPImAOCGti7KEwasnRTrKKn66iQefVs=
 github.com/emersion/go-sasl v0.0.0-20200509203442-7bfe0ed36a21 h1:OJyUGMJTzHTd1XQp98QTaHernxMYzRaOasRir9hUlFQ=
 github.com/emersion/go-sasl v0.0.0-20200509203442-7bfe0ed36a21/go.mod h1:iL2twTeMvZnrg54ZoPDNfJaJaqy0xIQFuBdrLsmspwQ=
-github.com/emersion/go-smtp v0.21.0 h1:ZDZmX9aFUuPlD1lpoT0nC/nozZuIkSCyQIyxdijjCy0=
-github.com/emersion/go-smtp v0.21.0/go.mod h1:qm27SGYgoIPRot6ubfQ/GpiPy/g3PaZAVRxiO/sDUgQ=
+github.com/emersion/go-smtp v0.21.1 h1:VQeZSZAKk8ueYii1yR5Zalmy7jI287eWDUqSaJ68vRM=
+github.com/emersion/go-smtp v0.21.1/go.mod h1:qm27SGYgoIPRot6ubfQ/GpiPy/g3PaZAVRxiO/sDUgQ=
 github.com/go-stack/stack v1.8.1 h1:ntEHSVwIt7PNXNpgPmVfMrNhLtgjlmnZha2kOpuRiDw=
 github.com/go-stack/stack v1.8.1/go.mod h1:dcoOX6HbPZSZptuspn9bctJ+N/CnF5gGygcUP3XYfe4=
 github.com/inconshreveable/log15 v3.0.0-testing.5+incompatible h1:VryeOTiaZfAzwx8xBcID1KlJCeoWSIpsNbSk+/D2LNk=
